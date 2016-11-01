@@ -15,6 +15,31 @@
 slimage 是一个 Bash 应用。我们同时还提供一个 windows cmd 的版本。
 
 ##用法##
+linux/mingw 或者 mac上:
+```
+slimage$ ./run.sh -f demo-config.sh -l min -n hello-slimage
+Prepare for building...
+Building src...
+Analyzing ELF files...
+Building...
+Sending build context to Docker daemon 8.127 MB
+Step 1 : FROM scratch
+ ---> 
+Step 2 : COPY . /
+ ---> Using cache
+ ---> 8c143d09beb3
+Step 3 : ENTRYPOINT /opt/bin/hello-slimage --server_ip=0.0.0.0
+ ---> Using cache
+ ---> 422adde5b9af
+Successfully built 422adde5b9af
+
+slimage$ docker run --rm -p 8080:80 hello-slimage
+```
+
+windows上:
+```
+run.bat -f -f demo-config.sh -l min -n hello-slimage
+```
 
 ##大致原理##
 
