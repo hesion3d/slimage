@@ -19,6 +19,7 @@ linux/mingw 或者 mac上:
 ```
 $ git clone https://github.com/hesion3d/slimage.git
 $ cd slimage
+slimage$ export GOPATH=`pwd`/demo
 slimage$ ./run.sh -f demo-config.sh -l min -n hello-slimage
 Prepare for building...
 Building src...
