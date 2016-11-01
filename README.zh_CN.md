@@ -38,7 +38,7 @@ slimage$ docker run --rm -p 8080:80 hello-slimage
 
 windows上:
 ```
-run.bat -f -f demo-config.sh -l min -n hello-slimage
+run.bat -f demo-config.sh -l min -n hello-slimage
 ```
 
 ##大致原理##
