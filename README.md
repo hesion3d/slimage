@@ -1,5 +1,7 @@
 #slimage#
 
+中文版请见 [README.zh_CN.md](https://github.com/hesion3d/slimage/blob/master/README.zh_CN.md)
+
 Make slim docker image for golang applications.
 
 ##background##
