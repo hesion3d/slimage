@@ -17,6 +17,9 @@ slimage 是一个 Bash 应用。我们同时还提供一个 windows cmd 的版�
 ##用法##
 linux/mingw 或者 mac上:
 ```
+$ git clone https://github.com/hesion3d/slimage.git
+$ cd slimage
+slimage$ export GOPATH=`pwd`/demo
 slimage$ ./run.sh -f demo-config.sh -l min -n hello-slimage
 Prepare for building...
 Building src...

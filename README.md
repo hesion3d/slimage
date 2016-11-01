@@ -19,6 +19,9 @@ slimage works in Bash. And we also provide a version port for windows commandlin
 ##usage##
 linux/mingw or mac:
 ```
+$ git clone https://github.com/hesion3d/slimage.git
+$ cd slimage
+slimage$ export GOPATH=`pwd`/demo
 slimage$ ./run.sh -f demo-config.sh -l min -n hello-slimage
 Prepare for building...
 Building src...
@@ -47,7 +50,7 @@ run.bat -f demo-config.sh -l min -n hello-slimage
 
 Instead of build docker image in docker, as described in most of the articles on the web, slimage build go source code from the image. Basically, we
 
- 1. find out all the dependencies of the binaries to pack
+ 1. find out all the dependencies of the binaries (ELF format) to pack
  2. make the directory tree
  3. copy the tree to temporary dir with a DOCKERFILE
  4. exit from the docker container and build the image outside.
