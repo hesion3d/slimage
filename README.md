@@ -17,6 +17,31 @@ There are already lots of creative way to build a small docker image on the web.
 slimage works in Bash. And we also provide a version port for windows commandline.
 
 ##usage##
+linux/mingw or mac:
+```
+slimage$ ./run.sh -f demo-config.sh -l min -n hello-slimage
+Prepare for building...
+Building src...
+Analyzing ELF files...
+Building...
+Sending build context to Docker daemon 8.127 MB
+Step 1 : FROM scratch
+ ---> 
+Step 2 : COPY . /
+ ---> Using cache
+ ---> 8c143d09beb3
+Step 3 : ENTRYPOINT /opt/bin/hello-slimage --server_ip=0.0.0.0
+ ---> Using cache
+ ---> 422adde5b9af
+Successfully built 422adde5b9af
+
+slimage$ docker run --rm -p 8080:80 hello-slimage
+```
+
+or in windows:
+```
+run.bat -f demo-config.sh -l min -n hello-slimage
+```
 
 ##insides##
 
