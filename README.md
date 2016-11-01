@@ -40,7 +40,7 @@ slimage$ docker run --rm -p 8080:80 hello-slimage
 
 or in windows:
 ```
-run.bat -f -f demo-config.sh -l min -n hello-slimage
+run.bat -f demo-config.sh -l min -n hello-slimage
 ```
 
 ##insides##
