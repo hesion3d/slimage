@@ -5,7 +5,6 @@ set -o nounset
 set -o pipefail
 
 readonly SLIMAGE_NAME=golang
-readonly DOCKER_VERSION_SUPPORT=12
 readonly OUTPUT_DIR=/tmp/slimage
 
 slimage::msg::err() {
@@ -58,10 +57,6 @@ slimage::run::help() {
 slimage::run::checkenv() {
     if [[ ! -e $GOPATH ]]; then
         slimage::msg::err "Please specify GOPATH at first."
-    fi
-    local -r DOCKER_VERSION=$(docker version |grep -A1 "Client:"|awk 'END{print $2}'|awk -F '.' '{print $2}')
-    if [[ (($DOCKER_VERSION < $DOCKER_VERSION_SUPPORT)) ]]; then
-        slimage::msg::err "Sorry, your docker version is not supported, please update at first."
     fi
 }
 

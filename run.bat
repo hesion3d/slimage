@@ -1,6 +1,5 @@
 @echo off
 set SLIMAGE_NAME=golang
-set DOCKER_VERSION_SUPPORT=12
 set FILE_NAME=%~nx0
 set OUTPUT_DIR=%temp%/slimage
 
@@ -91,17 +90,7 @@ if not defined GOPATH (
 	set ERRORLEVEL=3
 	goto :eof
 )
-
-for /f "delims=: tokens=2,3" %%i in ('docker version^|findstr /n /i "Version"') do (
-	for /f "delims=. tokens=2" %%m in ('echo %%j') do (
-		if %%m lss %DOCKER_VERSION_SUPPORT% (
-			echo.Sorry, your docker version is not supported, please update at first.
-			set ERRORLEVEL=3
-		)
-		goto :eof
-	)
-	goto :eof
-)
+goto :eof
 
 :slimage-run-usage
 echo.Usage: %FILE_NAME% [-f file][-l level][-n name][-v mounted files or dirs][-h]
