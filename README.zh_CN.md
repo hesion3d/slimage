@@ -55,5 +55,5 @@ run.bat -f demo-config.sh -l min -n hello-slimage
 
 ##参考##
 
-1. Building Minimum Docker Containers for Go Applications. https://blog.codeship.com/building-minimal-docker-containers-for-go-applications/
+1. [Building Minimum Docker Containers for Go Applications](https://blog.codeship.com/building-minimal-docker-containers-for-go-applications/).
 2. [Create the Smallest Possible Docker Container](http://blog.xebia.com/create-the-smallest-possible-docker-container/).
