@@ -4,7 +4,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-readonly SLIMAGE_NAME=golang
+readonly GOLANG_IMAGE=golang
+readonly DOCKER_VERSION_SUPPORT=12
 readonly OUTPUT_DIR=/tmp/slimage
 
 slimage::msg::err() {
@@ -30,11 +31,11 @@ slimage::image::build() {
 }
 
 slimage::image::run() {
-    docker run --privileged --rm $1 $SLIMAGE_NAME bash -c 'source /dockerize/dockerize.sh'
+    docker run --privileged --rm $1 $GOLANG_IMAGE bash -c 'source /dockerize/dockerize.sh'
 }
 
 slimage::run::usage() {
-    echo "Usage: $(basename $0) [-f file|-l level|-n name|-v mounted files or dirs|-h]"
+    echo "Usage: $(basename $0) [-f file|-l level|-n name|-v mounted files or dirs|-w|-h]"
     exit
 }
 
@@ -50,6 +51,7 @@ slimage::run::help() {
     echo "   if not set, will use basic, if you want more other tools, you should add in config file with RES_FILES"
     echo "-n name Docker image name which will build out. If not set, will be the name of config file."
     echo "-v extra mounted files or dirs, used in copy dockerized files. format: -v /home/$USER/Docuemtns:/root/doc -v /usr/local/bin"
+    echo "-w workdir set workdir for app run. default is /"
     slimage::msg::warn "When using in MINGW, our script and GOPATH should only in current user directory, which restricted by docker."
     exit
 }
@@ -57,6 +59,10 @@ slimage::run::help() {
 slimage::run::checkenv() {
     if [[ ! -e $GOPATH ]]; then
         slimage::msg::err "Please specify GOPATH at first."
+    fi
+    local -r DOCKER_VERSION=$(docker version |grep -A1 "Client:"|awk 'END{print $2}'|awk -F '.' '{print $2}')
+    if [[ (($DOCKER_VERSION < $DOCKER_VERSION_SUPPORT)) ]]; then
+        slimage::msg::err "Sorry, your docker version is not supported, please update at first."
     fi
 }
 
@@ -75,12 +81,14 @@ slimage::run::parseopts() {
     DOCKER_IMAGE_LEVEL=
     DOCKER_IMAGE_NAME=
     DOCKER_MOUNTED_PATHS=
-    while getopts "f:l:n:v:h" optname; do
+    DOCKER_WORKDIR=/
+    while getopts "f:l:n:v:w:h" optname; do
         case "$optname" in
             "f") DOCKER_CONFIG_FILE=$OPTARG;;
             "l") DOCKER_IMAGE_LEVEL=$OPTARG;;
             "n") DOCKER_IMAGE_NAME=$OPTARG;;
             "v") DOCKER_MOUNTED_PATHS="$DOCKER_MOUNTED_PATHS $OPTARG";;
+            "w") DOCKER_WORKDIR=$OPTARG;;
             "h") slimage::run::help;;
             "?") slimage::run::usage;;
         esac
@@ -118,9 +126,12 @@ slimage::main() {
         -v $MINGW_EXTRA_SPLASH$OUTPUT_DIR/out:$MINGW_EXTRA_SPLASH/tmp/out \
         $MOUNTS_ARGS \
         -e DOCKER_IMAGE_LEVEL=$DOCKER_IMAGE_LEVEL \
+        -e DOCKER_WORKDIR=$DOCKER_WORKDIR \
         --env-file=$DOCKER_CONFIG_FILE"
     slimage::image::run "$DOCKER_ARGS"
     slimage::image::build
 }
 
+pushd `dirname $0`
 slimage::main $*
+popd

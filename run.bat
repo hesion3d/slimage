@@ -1,10 +1,12 @@
 @echo off
-set SLIMAGE_NAME=golang
+set GOLANG_IMAGE=golang
+set DOCKER_VERSION_SUPPORT=12
 set FILE_NAME=%~nx0
 set OUTPUT_DIR=%temp%/slimage
 
 :slimage-main
 setlocal enabledelayedexpansion
+pushd %~d0
 call :slimage-run-parseopts %*
 if %ERRORLEVEL% equ 0 (
 	call :slimage-run-checkenv
@@ -16,12 +18,14 @@ if %ERRORLEVEL% equ 0 (
 	set DOCKER_ARGS=!DOCKER_ARGS! -v "%OUTPUT_DIR%/out":/tmp/out
 	set DOCKER_ARGS=!DOCKER_ARGS! !MOUTED_PATHS!
 	set DOCKER_ARGS=!DOCKER_ARGS! -e DOCKER_IMAGE_LEVEL=!DOCKER_IMAGE_LEVEL!
+	set DOCKER_ARGS=!DOCKER_ARGS! -e DOCKER_WORKDIR=!DOCKER_WORKDIR!
     set DOCKER_ARGS=!DOCKER_ARGS! --env-file=!DOCKER_CONFIG_FILE!
 	call :slimage-image-run !DOCKER_ARGS!
 )
 if ERRORLEVEL 0 (
 	call :slimage-image-build
 )
+popd
 endlocal
 goto :eof
 
@@ -30,6 +34,7 @@ set DOCKER_CONFIG_FILE=
 set DOCKER_IMAGE_LEVEL=
 set DOCKER_IMAGE_NAME=
 set DOCKER_MOUNTED_PATHS=
+set DOCKER_WORKDIR=/
 if "%1" == "" (
 	goto slimage-run-usage
 ) else (
@@ -78,6 +83,8 @@ if /i "%left%" == "f" (
 	set DOCKER_IMAGE_NAME="%1"
 ) else if /i "%left%" == "v" (
 	set DOCKER_MOUNTED_PATHS=!DOCKER_MOUNTED_PATHS! %1
+) else if /i "%left%" == "w" (
+	set DOCKER_WORKDIR="%1"
 ) else if /i "%left%" == "h" (
 	goto :slimage-run-help
 )
@@ -90,10 +97,20 @@ if not defined GOPATH (
 	set ERRORLEVEL=3
 	goto :eof
 )
-goto :eof
+
+for /f "delims=: tokens=2,3" %%i in ('docker version^|findstr /n /i "Version"') do (
+	for /f "delims=. tokens=2" %%m in ('echo %%j') do (
+		if %%m lss %DOCKER_VERSION_SUPPORT% (
+			echo.Sorry, your docker version is not supported, please update at first.
+			set ERRORLEVEL=3
+		)
+		goto :eof
+	)
+	goto :eof
+)
 
 :slimage-run-usage
-echo.Usage: %FILE_NAME% [-f file][-l level][-n name][-v mounted files or dirs][-h]
+echo.Usage: %FILE_NAME% [-f file][-l level][-n name][-v mounted files or dirs][-w][-h]
 set ERRORLEVEL=1
 goto :eof
 
@@ -109,12 +126,13 @@ echo.   net: extends extra set with net tools: curl, ping, ss, ip.
 echo.   if not set, will use basic, if you want more other tools, you should add in config file with RES_FILES
 echo.-n name Docker image name which will build out. If not set, will be the name of config file.
 echo.-v extra mounted files or dirs, used in copy dockerized files. format: -v %%USERPROFILE%%\Docuemtns:/root/doc -v d:/data:/data.
+echo.-w workdir set workdir for app run. default is "/".
 echo.When using in MINGW, our script and GOPATH should only in current user directory, which restricted by docker.
 set ERRORLEVEL=1
 goto :eof
 
 :slimage-image-run
-docker run --privileged %* --rm %SLIMAGE_NAME% bash -c "source /dockerize/dockerize.sh"
+docker run --privileged %* --rm %GOLANG_IMAGE% bash -c "source /dockerize/dockerize.sh"
 goto :eof
 
 :slimage-image-build

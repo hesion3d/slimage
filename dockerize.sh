@@ -99,6 +99,7 @@ slimage::dockerize::processcmd() {
 slimage::dockerize::writedocker() {
 	echo "FROM scratch">>$OUTPUT_DIR/Dockerfile
 	echo "COPY . /">>$OUTPUT_DIR/Dockerfile
+	echo "WORKDIR $DOCKER_WORKDIR">>$OUTPUT_DIR/Dockerfile
 	echo "ENTRYPOINT [$CMD_ARG]">>$OUTPUT_DIR/Dockerfile
 }
 
@@ -122,5 +123,4 @@ slimage::dockerize::build() {
 	trap '' EXIT INT TERM
 	slimage::dockerize::cleanup
 }
-
 slimage::dockerize::build
