@@ -49,7 +49,7 @@ slimage::dockerize::addresources() {
 	local EXTRA_RESFILES="/etc/group /etc/nsswitch.conf /etc/passwd /etc/ssl/certs/ca-certificates.crt /usr/share/zoneinfo"
 	local -r BASIC_FILETOOLS=" /bin/ls /bin/cat /bin/echo /bin/grep"
 	local -r EXTRA_FILETOOLS=" /bin/pwd /bin/bash /bin/sh /bin/dash /bin/cp /bin/mv /bin/mkdir /bin/chmod /bin/chown /bin/rm /bin/sed /bin/ln"
-	local -r NET_FILETOOLS=" /bin/ss /sbin/ip /usr/bin/curl"
+	local -r NET_FILETOOLS=" /bin/ss /bin/ip /usr/bin/curl"
 	local ALL_FILETOOLS=
 	if [[ "$DOCKER_IMAGE_LEVEL" = "min" ]]; then
 		:
