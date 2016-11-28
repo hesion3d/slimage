@@ -12,9 +12,9 @@ And to build docker image, the simplest way is to depends on some Golang image a
 - The size is usauly ~500MB;
 - The source code is also delivered with the binary.
 
-There are already lots of creative way to build a small docker image on the web. Slimage is a simple commandline tool inspired by [Nick Gauthier](https://blog.codeship.com/building-minimal-docker-containers-for-go-applications/) and [Adriaan](http://blog.xebia.com/create-the-smallest-possible-docker-container/)'s idea with slight modification. With slimage, you could build go application w/o Cgo support at ~25MB (include some basic linux commandline binaries for debugging).
+There are already lots of creative ways to build a minified docker image on the web. Slimage is a simple commandline tool inspired by [Nick Gauthier](https://blog.codeship.com/building-minimal-docker-containers-for-go-applications/) and [Adriaan](http://blog.xebia.com/create-the-smallest-possible-docker-container/)'s idea with slight modification. With slimage, you could build go application w/o Cgo support at ~25MB (including some basic linux commandline binaries for debugging).
 
-slimage works in Bash. And we also provide a version port for windows commandline.
+slimage works in Bash. And we also provide a port for windows commandline.
 
 ##usage##
 linux/mingw or mac:
@@ -48,7 +48,7 @@ run.bat -f demo-config.sh -l min -n hello-slimage
 
 ##insides##
 
-Instead of build docker image in docker, as described in most of the articles on the web, slimage build go source code from the image. Basically, we
+Instead of building docker image in docker, as described in most of the articles on the web, slimage build go source code from the image. Basically, we
 
  1. find out all the dependencies of the binaries (ELF format) to pack
  2. make the directory tree
