@@ -49,7 +49,7 @@ slimage::dockerize::addresources() {
 	local EXTRA_RESFILES="/etc/group /etc/nsswitch.conf /etc/passwd /etc/ssl/certs/ca-certificates.crt /usr/share/zoneinfo"
 	local -r BASIC_FILETOOLS=" /bin/ls /bin/cat /bin/echo /bin/grep"
 	local -r EXTRA_FILETOOLS=" /bin/pwd /bin/bash /bin/sh /bin/dash /bin/cp /bin/mv /bin/mkdir /bin/chmod /bin/chown /bin/rm /bin/sed /bin/ln"
-	local -r NET_FILETOOLS=" /bin/ping /bin/ss /usr/bin/curl /sbin/ip"
+	local -r NET_FILETOOLS=" /bin/ss /sbin/ip /usr/bin/curl"
 	local ALL_FILETOOLS=
 	if [[ "$DOCKER_IMAGE_LEVEL" = "min" ]]; then
 		:
@@ -62,6 +62,9 @@ slimage::dockerize::addresources() {
 		ALL_FILETOOLS=$BASIC_FILETOOLS
 		ALL_FILETOOLS+=$EXTRA_FILETOOLS
 		ALL_FILETOOLS+=$NET_FILETOOLS
+	fi
+	if [[ -n ${CMD} && ( "$DOCKER_IMAGE_LEVEL" = "min" || "$DOCKER_IMAGE_LEVEL" = "basic" ) ]]; then
+		ALL_FILETOOLS+="/bin/bash"
 	fi
 	EXTRA_RESFILES+=" $ALL_FILETOOLS"
 	if [[ -n $DOCKERIZED_FILES ]]; then
@@ -87,6 +90,9 @@ slimage::dockerize::addresources() {
 
 slimage::dockerize::processcmd() {
 	CMD_ARG=""
+	if [[ -n ${CMD} ]]; then
+		CMD=`eval echo ${CMD}`
+	fi
 	if [[ -n ${ENTRYPOINT} ]]; then
 		ENTRYPOINT=${ENTRYPOINT//,/ } #replace all , to space
 		ENTRYPOINT=${ENTRYPOINT// /,} #then replace all space to ,
@@ -100,7 +106,12 @@ slimage::dockerize::writedocker() {
 	echo "FROM scratch">>$OUTPUT_DIR/Dockerfile
 	echo "COPY . /">>$OUTPUT_DIR/Dockerfile
 	echo "WORKDIR $DOCKER_WORKDIR">>$OUTPUT_DIR/Dockerfile
-	echo "ENTRYPOINT [$CMD_ARG]">>$OUTPUT_DIR/Dockerfile
+	if [[ -n ${CMD} ]]; then
+		echo "CMD ${CMD}">>$OUTPUT_DIR/Dockerfile
+	fi
+	if [[ -n ${ENTRYPOINT} ]]; then
+		echo "ENTRYPOINT [$CMD_ARG]">>$OUTPUT_DIR/Dockerfile
+	fi
 }
 
 slimage::dockerize::cleanup() {
