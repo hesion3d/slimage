@@ -82,10 +82,8 @@ slimage::dockerize::addresources() {
 		if [[ ! ${right:0:1} = / ]]; then
 			>&2 echo "Path for resource $right must be absolute."
 		fi
-		if [[ ! ${right:${#right}-1:1} = / ]]; then
-			right=$(dirname $right)
-		fi
-    mkdir -p $OUTPUT_DIR$right
+		right_dir=${right%/*}
+    		mkdir -p $OUTPUT_DIR$right_dir
 		cp -pr $left $OUTPUT_DIR$right
 		echo $left>>$ELF_FILE_TXT
 	done
