@@ -46,7 +46,7 @@ slimage::dockerize::dependency() {
 }
 
 slimage::dockerize::addresources() {
-	local EXTRA_RESFILES="/etc/group /etc/nsswitch.conf /etc/passwd /etc/ssl/certs/ca-certificates.crt /usr/share/zoneinfo"
+	local EXTRA_RESFILES="/etc/group /etc/nsswitch.conf /etc/passwd /etc/ssl/certs/ca-certificates.crt /usr/share/zoneinfo /usr/share/zoneinfo /usr/local/go/lib/time/zoneinfo.zip"
 	local -r BASIC_FILETOOLS=" /bin/ls /bin/cat /bin/echo /bin/grep"
 	local -r EXTRA_FILETOOLS=" /bin/pwd /bin/bash /bin/sh /bin/dash /bin/cp /bin/mv /bin/mkdir /bin/chmod /bin/chown /bin/rm /bin/sed /bin/ln"
 	local -r NET_FILETOOLS=" /bin/ss /bin/ip /usr/bin/curl"
@@ -83,23 +83,18 @@ slimage::dockerize::addresources() {
 			>&2 echo "Path for resource $right must be absolute."
 		fi
 		right_dir=${right%/*}
-    		mkdir -p $OUTPUT_DIR$right_dir
+		mkdir -p $OUTPUT_DIR$right_dir
 		cp -pr $left $OUTPUT_DIR$right
 		echo $left>>$ELF_FILE_TXT
 	done
 }
 
 slimage::dockerize::processcmd() {
-	CMD_ARG=""
 	if [[ -n ${CMD} ]]; then
 		CMD=`eval echo ${CMD}`
 	fi
 	if [[ -n ${ENTRYPOINT} ]]; then
-		ENTRYPOINT=${ENTRYPOINT//,/ } #replace all , to space
-		ENTRYPOINT=${ENTRYPOINT// /,} #then replace all space to ,
-		ENTRYPOINT=${ENTRYPOINT//\\,/ } #if we have '\ ', revert
 		ENTRYPOINT=`eval echo ${ENTRYPOINT}`
-		CMD_ARG=\"${ENTRYPOINT//,/\",\"}\"
 	fi
 }
 
@@ -111,7 +106,7 @@ slimage::dockerize::writedocker() {
 		echo "CMD ${CMD}">>$OUTPUT_DIR/Dockerfile
 	fi
 	if [[ -n ${ENTRYPOINT} ]]; then
-		echo "ENTRYPOINT [$CMD_ARG]">>$OUTPUT_DIR/Dockerfile
+		echo "ENTRYPOINT $ENTRYPOINT">>$OUTPUT_DIR/Dockerfile
 	fi
 }
 
